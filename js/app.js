@@ -3,9 +3,9 @@
 // === Instellingen: pas deze twee regels aan na het opzetten van het Apps Script ===
 const CONFIG = {
   // De web-app-URL van je Google Apps Script (eindigt op /exec).
-  ENDPOINT: "PLAK_HIER_JE_APPS_SCRIPT_URL",
+  ENDPOINT: "https://script.google.com/macros/s/AKfycbzQM1nkT7cVfcbJQ4wQcXDXeYnM7kvIn_kG1xBjq8vHXoWtFYjlbGi4ZP33jPlnOEMV/exec",
   // Dezelfde geheime sleutel die ook in Code.gs staat.
-  SLEUTEL: "PLAK_HIER_DEZELFDE_GEHEIME_SLEUTEL"
+  SLEUTEL: "QNJsrbcoslHikes9AbdSoF8fQXoOd"
 };
 
 // === Opslagsleutels ===

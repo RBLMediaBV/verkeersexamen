@@ -11,8 +11,8 @@
  */
 
 // === Instellingen ===
-var GEHEIME_SLEUTEL = "PLAK_HIER_DEZELFDE_GEHEIME_SLEUTEL"; // exact gelijk aan js/app.js
-var MAIL_NAAR = "rnblefebvre@gmail.com";
+var GEHEIME_SLEUTEL = "QNJsrbcoslHikes9AbdSoF8fQXoOd"; // exact gelijk aan js/app.js
+var MAIL_NAAR = "renblefeber@gmail.com";
 var TABBLAD = "Resultaten";
 
 function doPost(e) {
