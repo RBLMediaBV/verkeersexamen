@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Verkeersexamen oefenen</title>
+  <meta name="description" content="Oefentool voor het verkeersexamen van groep 8: lessen, borden en toetsen.">
+
+  <!-- Installeerbaar op de iPad (Zet op beginscherm) -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0a51a1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Verkeersexamen">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="icon" href="icons/icon-192.png">
+
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Startscherm -->
+  <section id="scherm-start" class="scherm actief">
+    <header class="kop">
+      <div class="kop-fiets" aria-hidden="true">
+        <svg viewBox="0 0 100 60"><g stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="24" cy="42" r="14"/><circle cx="76" cy="42" r="14"/>
+          <path d="M24 42 L42 20 L64 20 M42 20 L58 42 M64 20 L76 42 M36 20 L48 20"/></g>
+          <circle cx="42" cy="20" r="3" fill="#fff"/></svg>
+      </div>
+      <h1>Verkeersexamen oefenen</h1>
+      <p class="ondertitel">Voor groep 8. Leer de regels en test jezelf.</p>
+    </header>
+
+    <div class="paneel naam-paneel">
+      <p id="begroeting" class="begroeting">Welkom!</p>
+      <label for="naam-invoer">Hoe heet je?</label>
+      <div class="naam-rij">
+        <input id="naam-invoer" type="text" autocomplete="name" placeholder="Je naam" maxlength="30">
+        <button id="naam-opslaan" class="primair">Opslaan</button>
+      </div>
+      <p class="naam-hint">Je naam komt bij je resultaat te staan.</p>
+    </div>
+
+    <div class="paneel">
+      <h2 class="paneel-kop">Snel oefenen</h2>
+      <button id="start-gemengd" class="primair groot vol">Gemengde ronde (20 vragen)</button>
+      <p id="wachtrij-melding" class="wachtrij verborgen"></p>
+    </div>
+
+    <div class="paneel">
+      <h2 class="paneel-kop">Kies een les</h2>
+      <p class="paneel-hint">Lees eerst de uitleg, oefen daarna de vragen van die les.</p>
+      <div id="les-knoppen" class="les-knoppen"></div>
+    </div>
+
+    <footer class="voet">Veel succes met je examen!</footer>
+  </section>
+
+  <!-- Lesscherm -->
+  <section id="scherm-les" class="scherm">
+    <div class="balk">
+      <button class="terug" data-terug>Terug</button>
+    </div>
+    <article id="les-inhoud" class="paneel les-inhoud"></article>
+  </section>
+
+  <!-- Toetsscherm -->
+  <section id="scherm-toets" class="scherm">
+    <div class="voortgang-rij">
+      <span id="voortgang">Vraag 1 van 20</span>
+      <span id="tussenscore" class="tussenscore">0 goed</span>
+    </div>
+    <div class="voortgangsbalk"><div id="voortgangsbalk-vol"></div></div>
+    <article id="vraag-box" class="paneel vraag-box"></article>
+  </section>
+
+  <!-- Resultaatscherm -->
+  <section id="scherm-resultaat" class="scherm">
+    <header class="kop klein">
+      <h1>Je resultaat</h1>
+    </header>
+    <article id="resultaat-box" class="paneel"></article>
+    <p id="verstuur-status" class="verstuur-status"></p>
+    <button id="opnieuw-knop" class="primair groot vol">Terug naar het begin</button>
+  </section>
+
+  <script src="js/vragen.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
