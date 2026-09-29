@@ -19,7 +19,7 @@
 </head>
 <body>
 
-  <!-- Startscherm -->
+  <!-- Beginscherm -->
   <section id="scherm-start" class="scherm actief">
     <header class="kop">
       <div class="kop-fiets" aria-hidden="true">
@@ -42,27 +42,58 @@
       <p class="naam-hint">Je naam komt bij je resultaat te staan.</p>
     </div>
 
-    <div class="paneel">
-      <h2 class="paneel-kop">Snel oefenen</h2>
-      <button id="start-gemengd" class="primair groot vol">Gemengde ronde (20 vragen)</button>
-      <p id="wachtrij-melding" class="wachtrij verborgen"></p>
+    <div class="keuze">
+      <button id="ga-leren" class="keuzekaart leren">
+        <span class="keuze-icoon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 5a2 2 0 0 1 2-2h6v16H6a2 2 0 0 0-2 2z"/>
+            <path d="M20 5a2 2 0 0 0-2-2h-6v16h6a2 2 0 0 1 2 2z"/></svg>
+        </span>
+        <span class="keuze-titel">Leren</span>
+        <span class="keuze-sub">Lees de uitleg en bekijk de borden</span>
+      </button>
+      <button id="ga-oefenen" class="keuzekaart oefenen">
+        <span class="keuze-icoon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 11l3 3L22 4"/>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        </span>
+        <span class="keuze-titel">Oefenen</span>
+        <span class="keuze-sub">Maak de toetsen</span>
+      </button>
     </div>
 
-    <div class="paneel">
-      <h2 class="paneel-kop">Kies een les</h2>
-      <p class="paneel-hint">Lees eerst de uitleg, oefen daarna de vragen van die les.</p>
-      <div id="les-knoppen" class="les-knoppen"></div>
-    </div>
-
+    <p id="wachtrij-melding" class="wachtrij verborgen"></p>
     <footer class="voet">Veel succes met je examen!</footer>
   </section>
 
-  <!-- Lesscherm -->
-  <section id="scherm-les" class="scherm">
-    <div class="balk">
-      <button class="terug" data-terug>Terug</button>
+  <!-- Leren: lijst met lessen -->
+  <section id="scherm-leren" class="scherm">
+    <div class="balk"><button class="terug" data-naar="start">Terug</button></div>
+    <div class="paneel">
+      <h2 class="paneel-kop">Leren</h2>
+      <p class="paneel-hint">Kies een les. Je leest eerst de uitleg met de borden.</p>
+      <div id="leren-knoppen" class="les-knoppen"></div>
     </div>
+  </section>
+
+  <!-- Lesscherm (de uitleg zelf) -->
+  <section id="scherm-les" class="scherm">
+    <div class="balk"><button class="terug" data-naar="leren">Terug naar de lessen</button></div>
     <article id="les-inhoud" class="paneel les-inhoud"></article>
+  </section>
+
+  <!-- Oefenen -->
+  <section id="scherm-oefenen" class="scherm">
+    <div class="balk"><button class="terug" data-naar="start">Terug</button></div>
+    <div class="paneel">
+      <h2 class="paneel-kop">Oefenen</h2>
+      <button id="start-gemengd" class="primair groot vol">Gemengde ronde (20 vragen)</button>
+    </div>
+    <div class="paneel">
+      <h2 class="paneel-kop">Of oefen per les</h2>
+      <div id="oefen-knoppen" class="les-knoppen"></div>
+    </div>
   </section>
 
   <!-- Toetsscherm -->

@@ -107,6 +107,33 @@ button { font-family: inherit; cursor: pointer; }
 }
 .balk { margin-bottom: 12px; }
 
+/* Twee grote keuzeknoppen: Leren en Oefenen */
+.keuze {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.keuzekaart {
+  border: none;
+  border-radius: var(--radius);
+  padding: 22px 16px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--schaduw);
+  min-height: 150px;
+  justify-content: center;
+}
+.keuzekaart:active { transform: scale(0.99); }
+.keuzekaart.leren { background: linear-gradient(135deg, #0a51a1, #073a75); }
+.keuzekaart.oefenen { background: linear-gradient(135deg, #1a8a34, #126227); }
+.keuze-icoon svg { width: 46px; height: 46px; }
+.keuze-titel { font-size: 22px; font-weight: 800; }
+.keuze-sub { font-size: 13px; opacity: 0.92; text-align: center; line-height: 1.3; }
+
 /* Lesknoppen op het startscherm */
 .les-knoppen {
   display: grid;
@@ -119,13 +146,14 @@ button { font-family: inherit; cursor: pointer; }
   border-radius: 14px;
   padding: 14px;
   text-align: left;
+  color: var(--tekst);
   display: flex;
   flex-direction: column;
   gap: 3px;
 }
 .leskaart:active { border-color: var(--blauw); }
 .leskaart .lesnr { color: var(--rood); font-weight: 800; font-size: 14px; }
-.leskaart .lestitel { font-weight: 700; font-size: 16px; }
+.leskaart .lestitel { font-weight: 700; font-size: 16px; color: var(--tekst); }
 .leskaart .lesmeta { color: var(--grijs); font-size: 13px; }
 
 .wachtrij {
@@ -273,13 +301,13 @@ button { font-family: inherit; cursor: pointer; }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --tekst: #e7ecf3;
-    --grijs: #a2adbb;
-    --lijn: #2c3646;
+    --tekst: #f2f5fa;
+    --grijs: #bcc6d3;
+    --lijn: #3a465a;
     --vlak: #1a2230;
     --achtergrond: #10151d;
   }
-  .leskaart, .bordkaart, .optie { background: #222c3c; }
+  .leskaart, .bordkaart, .optie { background: #263145; }
   .onthoud { background: #1d2a3c; }
   .wachtrij { background: #33280f; color: #ffd479; }
   .optie.goed { background: #12351f; color: #7fe0a0; }

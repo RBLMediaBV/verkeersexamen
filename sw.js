@@ -1,6 +1,6 @@
 // Service worker: maakt de tool offline bruikbaar.
 // Verhoog het versienummer als je bestanden aanpast, dan haalt de iPad de nieuwe versie op.
-const CACHE = "verkeersexamen-v1";
+const CACHE = "verkeersexamen-v2";
 const BESTANDEN = [
   ".",
   "index.html",

@@ -26,6 +26,10 @@ const LESSEN = [
       { kop: "Fietsstrook", body: "Een strook op de gewone weg, vaak rood geverfd en met een witte streep ernaast. Ook die moet je gebruiken als hij er is." },
       { kop: "Geen fietspad of strook?", body: "Dan fiets je op de rijbaan, zo veel mogelijk rechts. Nooit op de stoep: die is voor voetgangers." },
       { kop: "Naast elkaar", body: "Je mag met z'n tweeen naast elkaar fietsen, niet met meer. Houd je daarmee ander verkeer op, ga dan achter elkaar fietsen." }
+    ],
+    borden: [
+      { svg: "verplicht_fietspad", naam: "Verplicht fietspad", uitleg: "Rond blauw bord met een fiets: hier moet je fietsen." },
+      { svg: "verboden_fietsers", naam: "Verboden voor fietsers", uitleg: "Hier mag je juist niet fietsen." }
     ]
   },
   {
@@ -37,6 +41,11 @@ const LESSEN = [
       { kop: "Stap 2: borden en haaientanden", body: "Haaientanden zijn witte driehoekjes op de weg met de punt naar jou toe. Zie je ze bij jouw kant? Dan moet jij voorrang verlenen aan de bestuurders op de weg die je kruist." },
       { kop: "Stap 3: rechts gaat voor", body: "Op een kruispunt zonder borden en haaientanden heeft verkeer dat van rechts komt voorrang. Een auto van rechts mag dus eerst, ook als jij op de fiets zit." },
       { kop: "Uitzonderingen", body: "Een tram heeft op een gewoon kruispunt altijd voorrang, ook van links. Kom je uit een uitrit, zandweg of woonerf, dan laat je iedereen voorgaan, ook voetgangers. Wil je afslaan, dan laat je verkeer dat rechtdoor gaat eerst gaan." }
+    ],
+    borden: [
+      { svg: "voorrang_verlenen", naam: "Voorrang verlenen", uitleg: "Bij haaientanden: wacht en laat de ander eerst." },
+      { svg: "voorrangsweg", naam: "Voorrangsweg", uitleg: "Jij rijdt op de weg met voorrang." },
+      { svg: "stop", naam: "Stop", uitleg: "Eerst helemaal stilstaan, dan voorrang verlenen." }
     ]
   },
   {
@@ -83,6 +92,9 @@ const LESSEN = [
       { kop: "Voorrang", body: "Wie voorrang heeft zie je aan de haaientanden. Staan ze bij jouw kant, dan laat je het verkeer op de rotonde eerst gaan." },
       { kop: "Fietspad rond de rotonde", body: "Binnen de bebouwde kom hebben fietsers daar meestal voorrang, buiten de bebouwde kom meestal niet. Kijk dus altijd naar de haaientanden." },
       { kop: "Eraf gaan", body: "Steek je rechterarm uit als je de rotonde verlaat." }
+    ],
+    borden: [
+      { svg: "rotonde", naam: "Rotonde", uitleg: "Rondgaand verkeer, je rijdt rechtsom." }
     ]
   },
   {

@@ -56,25 +56,32 @@ function toon(schermId) {
 function getNaam() { try { return localStorage.getItem(KEY_NAAM) || ""; } catch (e) { return ""; } }
 function setNaam(n) { try { localStorage.setItem(KEY_NAAM, n); } catch (e) {} }
 
-// === Startscherm opbouwen ===
+// === Beginscherm bijwerken ===
 function bouwStart() {
   const naam = getNaam();
   $("#naam-invoer").value = naam;
   $("#begroeting").textContent = naam ? `Hoi ${naam}!` : "Welkom!";
+  werkWachtrijMeldingBij();
+}
 
-  const lijst = $("#les-knoppen");
+// === Lessenlijst opbouwen (voor Leren of voor Oefenen) ===
+function vulLessen(containerId, modus) {
+  const lijst = $("#" + containerId);
   lijst.innerHTML = "";
   LESSEN.forEach((les) => {
     const aantal = VRAGEN.filter((v) => v.les === les.id).length;
     const knop = maak("button", "leskaart");
+    const meta = modus === "leren" ? "Lees de uitleg" : `${aantal} vragen`;
     knop.innerHTML = `<span class="lesnr">Les ${les.id}</span>
       <span class="lestitel">${les.titel}</span>
-      <span class="lesmeta">${aantal} vragen</span>`;
-    knop.addEventListener("click", () => toonLes(les.id));
+      <span class="lesmeta">${meta}</span>`;
+    if (modus === "leren") {
+      knop.addEventListener("click", () => toonLes(les.id));
+    } else {
+      knop.addEventListener("click", () => startToets("les", les.id));
+    }
     lijst.appendChild(knop);
   });
-
-  werkWachtrijMeldingBij();
 }
 
 // === Lesstof tonen ===
@@ -132,6 +139,7 @@ function maakVraagKopie(v) {
 }
 
 function startToets(modus, lesId) {
+  if (!getNaam()) { toon("scherm-start"); $("#naam-invoer").focus(); return; }
   let bron;
   let modusTekst;
   if (modus === "les") {
@@ -358,13 +366,29 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Enter") $("#naam-opslaan").click();
   });
 
-  $("#start-gemengd").addEventListener("click", () => {
+  // Beginscherm: twee knoppen.
+  $("#ga-leren").addEventListener("click", () => {
+    vulLessen("leren-knoppen", "leren");
+    toon("scherm-leren");
+  });
+  $("#ga-oefenen").addEventListener("click", () => {
     if (!getNaam()) { $("#naam-invoer").focus(); return; }
+    vulLessen("oefen-knoppen", "oefenen");
+    toon("scherm-oefenen");
+  });
+
+  $("#start-gemengd").addEventListener("click", () => {
+    if (!getNaam()) { toon("scherm-start"); $("#naam-invoer").focus(); return; }
     startToets("gemengd");
   });
 
-  document.querySelectorAll("[data-terug]").forEach((k) => {
-    k.addEventListener("click", () => { bouwStart(); toon("scherm-start"); });
+  // Terug-knoppen sturen naar het aangegeven scherm.
+  document.querySelectorAll("[data-naar]").forEach((k) => {
+    k.addEventListener("click", () => {
+      const naar = k.getAttribute("data-naar");
+      if (naar === "start") bouwStart();
+      toon("scherm-" + naar);
+    });
   });
 
   $("#opnieuw-knop").addEventListener("click", () => { bouwStart(); toon("scherm-start"); });
