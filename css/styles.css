@@ -1,0 +1,292 @@
+:root {
+  --blauw: #0a51a1;
+  --blauw-donker: #073a75;
+  --rood: #d0021b;
+  --groen: #1a8a34;
+  --oranje: #f5a623;
+  --tekst: #1c2530;
+  --grijs: #5b6675;
+  --lijn: #dfe4ea;
+  --vlak: #ffffff;
+  --achtergrond: #eef2f7;
+  --radius: 16px;
+  --schaduw: 0 2px 10px rgba(10, 40, 80, 0.08);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+.verborgen { display: none !important; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--achtergrond);
+  color: var(--tekst);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+body {
+  padding:
+    env(safe-area-inset-top)
+    env(safe-area-inset-right)
+    env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
+}
+
+.scherm {
+  display: none;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 16px 16px 40px;
+}
+.scherm.actief { display: block; }
+
+/* Koppen */
+.kop {
+  background: linear-gradient(135deg, var(--blauw), var(--blauw-donker));
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 22px 20px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+.kop.klein { padding: 16px; }
+.kop h1 { margin: 6px 0 4px; font-size: 26px; }
+.kop .ondertitel { margin: 0; opacity: 0.9; font-size: 16px; }
+.kop-fiets svg { width: 84px; height: 50px; }
+
+/* Panelen */
+.paneel {
+  background: var(--vlak);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 16px;
+  box-shadow: var(--schaduw);
+}
+.paneel-kop { margin: 0 0 12px; font-size: 20px; color: var(--blauw); }
+.paneel-hint, .naam-hint { color: var(--grijs); font-size: 15px; margin: 0 0 12px; }
+
+/* Naam */
+.begroeting { font-size: 20px; font-weight: 700; margin: 0 0 12px; }
+.naam-paneel label { display: block; font-weight: 600; margin-bottom: 6px; }
+.naam-rij { display: flex; gap: 10px; }
+#naam-invoer {
+  flex: 1;
+  padding: 14px;
+  font-size: 18px;
+  border: 2px solid var(--lijn);
+  border-radius: 12px;
+  min-width: 0;
+}
+#naam-invoer:focus { outline: none; border-color: var(--blauw); }
+
+/* Knoppen */
+button { font-family: inherit; cursor: pointer; }
+.primair {
+  background: var(--blauw);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 17px;
+  font-weight: 700;
+}
+.primair:active { background: var(--blauw-donker); }
+.primair.groot { padding: 16px 20px; font-size: 19px; width: 100%; margin-top: 14px; }
+.primair.vol { width: 100%; }
+
+.terug {
+  background: #fff;
+  border: 2px solid var(--lijn);
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--blauw);
+}
+.balk { margin-bottom: 12px; }
+
+/* Lesknoppen op het startscherm */
+.les-knoppen {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.leskaart {
+  background: #f6f9fd;
+  border: 2px solid var(--lijn);
+  border-radius: 14px;
+  padding: 14px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.leskaart:active { border-color: var(--blauw); }
+.leskaart .lesnr { color: var(--rood); font-weight: 800; font-size: 14px; }
+.leskaart .lestitel { font-weight: 700; font-size: 16px; }
+.leskaart .lesmeta { color: var(--grijs); font-size: 13px; }
+
+.wachtrij {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  background: #fff6e6;
+  border: 1px solid var(--oranje);
+  border-radius: 10px;
+  font-size: 14px;
+  color: #7a5200;
+}
+
+/* Lesinhoud */
+.les-inhoud h2.les-hoofd { color: var(--blauw); margin-top: 0; }
+.les-inhoud h3 { margin: 18px 0 4px; font-size: 18px; }
+.les-inhoud p { margin: 6px 0; }
+.onthoud {
+  background: #eef4fb;
+  border-left: 5px solid var(--blauw);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 18px 0 6px;
+}
+.onthoud strong { color: var(--rood); }
+
+/* Borden */
+.borden-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 14px;
+  margin: 14px 0;
+}
+.bordkaart {
+  background: #f6f9fd;
+  border: 1px solid var(--lijn);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.bordfig .bord-img { width: 84px; height: 84px; object-fit: contain; }
+.bordkaart strong { font-size: 14px; }
+.borduitleg { font-size: 13px; color: var(--grijs); }
+
+/* Toets */
+.voortgang-rij {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  color: var(--grijs);
+  margin-bottom: 8px;
+}
+.tussenscore { color: var(--groen); }
+.voortgangsbalk {
+  height: 8px;
+  background: var(--lijn);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+#voortgangsbalk-vol {
+  height: 100%;
+  width: 0;
+  background: var(--blauw);
+  transition: width 0.25s ease;
+}
+.vraag-bord { text-align: center; margin-bottom: 12px; }
+.vraag-bord .bord-img { width: 130px; height: 130px; object-fit: contain; }
+.vraagtekst { font-size: 21px; margin: 0 0 16px; line-height: 1.35; }
+
+.opties { display: flex; flex-direction: column; gap: 12px; }
+.optie {
+  background: #f6f9fd;
+  border: 2px solid var(--lijn);
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 17px;
+  text-align: left;
+  color: var(--tekst);
+  transition: transform 0.05s ease;
+}
+.optie:active { transform: scale(0.99); }
+.optie:disabled { opacity: 1; }
+.optie.goed { border-color: var(--groen); background: #e7f6ec; color: #0d5c22; font-weight: 700; }
+.optie.fout { border-color: var(--rood); background: #fdecee; color: #8a0011; font-weight: 700; }
+
+.feedback {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 16px;
+}
+.feedback.verborgen { display: none; }
+.fb-goed { background: #e7f6ec; border: 1px solid var(--groen); }
+.fb-fout { background: #fdecee; border: 1px solid var(--rood); }
+.feedback strong { display: inline; }
+
+/* Resultaat */
+.score-cirkel {
+  width: 150px; height: 150px;
+  border-radius: 50%;
+  margin: 6px auto 12px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: #fff;
+}
+.score-top { background: var(--groen); }
+.score-ok { background: var(--oranje); }
+.score-laag { background: var(--rood); }
+.score-groot { font-size: 48px; font-weight: 800; line-height: 1; }
+.score-klein { font-size: 16px; opacity: 0.95; }
+.score-boodschap { text-align: center; font-size: 18px; font-weight: 600; margin: 0 0 16px; }
+.alles-goed { text-align: center; color: var(--groen); font-weight: 700; }
+
+.foutkaart {
+  background: #fbfcfe;
+  border: 1px solid var(--lijn);
+  border-left: 4px solid var(--rood);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+.fout-vraag { font-weight: 700; margin: 0 0 6px; }
+.fout-regel { margin: 2px 0; font-size: 15px; }
+.fout-x { color: var(--rood); font-weight: 700; }
+.goed-v { color: var(--groen); font-weight: 700; }
+
+.verstuur-status {
+  text-align: center;
+  color: var(--grijs);
+  font-size: 15px;
+  min-height: 22px;
+  margin: 8px 0;
+}
+.voet { text-align: center; color: var(--grijs); font-size: 14px; margin-top: 8px; }
+
+/* Grotere schermen: iPad Air 13 en Full HD */
+@media (min-width: 700px) {
+  .les-knoppen { grid-template-columns: repeat(3, 1fr); }
+  .vraagtekst { font-size: 23px; }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --tekst: #e7ecf3;
+    --grijs: #a2adbb;
+    --lijn: #2c3646;
+    --vlak: #1a2230;
+    --achtergrond: #10151d;
+  }
+  .leskaart, .bordkaart, .optie { background: #222c3c; }
+  .onthoud { background: #1d2a3c; }
+  .wachtrij { background: #33280f; color: #ffd479; }
+  .optie.goed { background: #12351f; color: #7fe0a0; }
+  .optie.fout { background: #3a1518; color: #ff9aa6; }
+  .fb-goed { background: #12351f; }
+  .fb-fout { background: #3a1518; }
+  .foutkaart { background: #1c2430; }
+  #naam-invoer { background: #222c3c; color: var(--tekst); }
+  .terug { background: #222c3c; }
+}
