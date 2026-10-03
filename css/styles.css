@@ -270,6 +270,40 @@ button { font-family: inherit; cursor: pointer; }
 .fb-goed { background: #e7f6ec; border: 1px solid var(--groen); }
 .fb-fout { background: #fdecee; border: 1px solid var(--rood); }
 .feedback strong { display: inline; }
+.fb-weet { background: #fff6e6; border: 1px solid var(--oranje); }
+
+/* Meerkeuze (meerdere antwoorden goed) */
+.meer-hint { font-weight: 700; color: var(--blauw); font-size: 15px; margin: 0 0 12px; }
+.optie.kies { position: relative; padding-left: 50px; }
+.optie.kies::before {
+  content: "";
+  position: absolute;
+  left: 16px; top: 50%; transform: translateY(-50%);
+  width: 22px; height: 22px;
+  border: 2px solid var(--grijs);
+  border-radius: 6px;
+  background: #fff;
+}
+.optie.kies.gekozen { border-color: var(--blauw); background: #e8f1fb; }
+.optie.kies.gekozen::before {
+  background: var(--blauw); border-color: var(--blauw);
+  content: "\2713"; color: #fff; text-align: center; line-height: 20px; font-weight: 800;
+}
+
+/* Knoppenrij onder de opties */
+.vraag-acties { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+.vraag-acties .primair { flex: 1 1 auto; }
+.weetniet-knop {
+  flex: 1 1 auto;
+  background: transparent;
+  border: 2px dashed var(--lijn);
+  color: var(--grijs);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-weight: 700;
+  font-size: 15px;
+}
+.weetniet-knop:disabled { opacity: 0.5; }
 
 /* Resultaat */
 .score-cirkel {
@@ -300,6 +334,9 @@ button { font-family: inherit; cursor: pointer; }
 .fout-regel { margin: 2px 0; font-size: 15px; }
 .fout-x { color: var(--rood); font-weight: 700; }
 .goed-v { color: var(--groen); font-weight: 700; }
+.fout-uitleg { font-size: 14px; color: var(--grijs); margin: 8px 0 0; }
+.foutkaart.induik { border-left-color: var(--oranje); background: #fffaf0; }
+.induik-hint { color: var(--grijs); font-size: 14px; margin: 0 0 10px; }
 
 .verstuur-status {
   text-align: center;
@@ -331,7 +368,13 @@ button { font-family: inherit; cursor: pointer; }
   .optie.fout { background: #3a1518; color: #ff9aa6; }
   .fb-goed { background: #12351f; }
   .fb-fout { background: #3a1518; }
+  .fb-weet { background: #33280f; }
   .foutkaart { background: #1c2430; }
+  .foutkaart.induik { background: #2a2411; }
+  .optie.kies::before { background: #1a2230; border-color: var(--grijs); }
+  .optie.kies.gekozen { background: #16365e; }
+  .optie.kies.gekozen::before { background: var(--blauw); border-color: var(--blauw); }
+  .weetniet-knop { background: transparent; }
   #naam-invoer { background: #222c3c; color: var(--tekst); }
   .terug { background: #222c3c; }
 }

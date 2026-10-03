@@ -162,13 +162,20 @@ function toonLes(lesId) {
 
 // === Toets voorbereiden ===
 function maakVraagKopie(v) {
-  const paren = v.opties.map((tekst, i) => ({ tekst, juist: i === v.juist }));
+  const meer = !!v.meer;
+  const paren = v.opties.map((tekst, i) => ({
+    tekst,
+    juist: meer ? v.juistMeer.includes(i) : i === v.juist
+  }));
   const geschud = schud(paren);
+  const juisteSet = geschud.map((p, i) => (p.juist ? i : -1)).filter((i) => i >= 0);
   return {
     vraag: v.vraag,
     toonBord: v.toonBord || null,
+    meer,
     opties: geschud,
-    juisteIndex: geschud.findIndex((p) => p.juist),
+    juisteIndex: meer ? null : juisteSet[0],
+    juisteSet,
     uitleg: v.uitleg,
     les: v.les
   };
@@ -219,39 +226,77 @@ function toonVraag() {
 
   box.appendChild(maak("h2", "vraagtekst", v.vraag));
 
+  if (v.meer) {
+    box.appendChild(maak("p", "meer-hint", "Er kan meer dan een antwoord goed zijn. Kies alles wat klopt."));
+  }
+
   const opties = maak("div", "opties");
   v.opties.forEach((opt, i) => {
-    const knop = maak("button", "optie", opt.tekst);
-    knop.addEventListener("click", () => kiesAntwoord(i, knop));
+    const knop = maak("button", v.meer ? "optie kies" : "optie", opt.tekst);
+    if (v.meer) {
+      knop.addEventListener("click", () => { if (!knop.disabled) knop.classList.toggle("gekozen"); });
+    } else {
+      knop.addEventListener("click", () => kiesEnkel(i));
+    }
     opties.appendChild(knop);
   });
   box.appendChild(opties);
+
+  // Knoppenrij: bij meerkeuze een Controleer-knop, en altijd "Ik weet het niet".
+  const acties = maak("div", "vraag-acties");
+  if (v.meer) {
+    const controleer = maak("button", "primair", "Controleer");
+    controleer.addEventListener("click", controleerMeer);
+    acties.appendChild(controleer);
+  }
+  const weet = maak("button", "weetniet-knop", "Ik weet het niet");
+  weet.addEventListener("click", weetNiet);
+  acties.appendChild(weet);
+  box.appendChild(acties);
 
   const feedback = maak("div", "feedback verborgen");
   feedback.id = "feedback";
   box.appendChild(feedback);
 }
 
-function kiesAntwoord(gekozenIndex, gekozenKnop) {
-  const v = toets.vragen[toets.index];
-  const optieKnoppen = document.querySelectorAll("#vraag-box .optie");
-  optieKnoppen.forEach((k) => (k.disabled = true));
+// Alle knoppen van de vraag uitzetten na een antwoord.
+function sluitVraag() {
+  document.querySelectorAll("#vraag-box .optie").forEach((k) => (k.disabled = true));
+  document.querySelectorAll("#vraag-box .vraag-acties button").forEach((k) => (k.disabled = true));
+}
 
-  const goed = gekozenIndex === v.juisteIndex;
-  optieKnoppen[v.juisteIndex].classList.add("goed");
-  if (!goed) gekozenKnop.classList.add("fout");
+// De juiste opties groen maken; fout gekozen opties rood.
+function markeerOpties(gekozenSet) {
+  const v = toets.vragen[toets.index];
+  document.querySelectorAll("#vraag-box .optie").forEach((k, i) => {
+    const juist = v.juisteSet.includes(i);
+    if (juist) k.classList.add("goed");
+    if (gekozenSet.includes(i) && !juist) k.classList.add("fout");
+  });
+}
+
+// Feedback tonen, antwoord onthouden en de knop naar de volgende vraag plaatsen.
+function toonFeedback(goed, weetNietFlag, gegevenTekst) {
+  const v = toets.vragen[toets.index];
+  const juistTekst = v.juisteSet.map((i) => v.opties[i].tekst).join(", ");
 
   toets.antwoorden.push({
     goed,
+    weetNiet: weetNietFlag,
     vraag: v.vraag,
-    gegeven: v.opties[gekozenIndex].tekst,
-    juist: v.opties[v.juisteIndex].tekst
+    gegeven: gegevenTekst,
+    juist: juistTekst,
+    uitleg: v.uitleg,
+    les: v.les
   });
 
   const fb = $("#feedback");
   fb.classList.remove("verborgen");
-  fb.classList.add(goed ? "fb-goed" : "fb-fout");
-  fb.innerHTML = `<strong>${goed ? "Goed!" : "Helaas."}</strong> ${v.uitleg}`;
+  let kop;
+  if (weetNietFlag) { fb.classList.add("fb-weet"); kop = "Geen probleem, dit leer je zo."; }
+  else if (goed) { fb.classList.add("fb-goed"); kop = "Goed!"; }
+  else { fb.classList.add("fb-fout"); kop = "Helaas."; }
+  fb.innerHTML = `<strong>${kop}</strong> ${v.uitleg}`;
 
   const laatste = toets.index === toets.vragen.length - 1;
   const volgende = maak("button", "primair groot", laatste ? "Bekijk je resultaat" : "Volgende vraag");
@@ -262,12 +307,42 @@ function kiesAntwoord(gekozenIndex, gekozenKnop) {
   fb.appendChild(volgende);
 }
 
+// Antwoord bij een gewone vraag.
+function kiesEnkel(gekozenIndex) {
+  const v = toets.vragen[toets.index];
+  sluitVraag();
+  markeerOpties([gekozenIndex]);
+  toonFeedback(gekozenIndex === v.juisteIndex, false, v.opties[gekozenIndex].tekst);
+}
+
+// Antwoord bij een meerkeuzevraag: de gekozen set moet precies kloppen.
+function controleerMeer() {
+  const v = toets.vragen[toets.index];
+  const knoppen = [...document.querySelectorAll("#vraag-box .optie")];
+  const gekozenSet = knoppen.map((k, i) => (k.classList.contains("gekozen") ? i : -1)).filter((i) => i >= 0);
+  sluitVraag();
+  markeerOpties(gekozenSet);
+  const goed = gekozenSet.length > 0 &&
+    v.juisteSet.slice().sort().join(",") === gekozenSet.slice().sort().join(",");
+  const gegeven = gekozenSet.length ? gekozenSet.map((i) => v.opties[i].tekst).join(", ") : "(niets gekozen)";
+  toonFeedback(goed, false, gegeven);
+}
+
+// "Ik weet het niet": geen gok. Het juiste antwoord wordt getoond en later nabesproken.
+function weetNiet() {
+  sluitVraag();
+  markeerOpties([]);
+  toonFeedback(false, true, "Ik weet het niet");
+}
+
 // === Afronden ===
 function rondAf() {
   const totaal = toets.vragen.length;
   const goed = toets.antwoorden.filter((a) => a.goed).length;
-  const fouten = toets.antwoorden.filter((a) => !a.goed);
+  const foutAntwoorden = toets.antwoorden.filter((a) => !a.goed && !a.weetNiet);
+  const weetNietAntwoorden = toets.antwoorden.filter((a) => a.weetNiet);
   const tijd = nu();
+  const strip = (a) => ({ vraag: a.vraag, gegeven: a.gegeven, juist: a.juist, uitleg: a.uitleg });
 
   const resultaat = {
     id: maakId(),
@@ -277,12 +352,31 @@ function rondAf() {
     modus: toets.modus,
     aantalGoed: goed,
     aantalTotaal: totaal,
-    fouten: fouten.map((f) => ({ vraag: f.vraag, gegeven: f.gegeven, juist: f.juist }))
+    aantalWeetNiet: weetNietAntwoorden.length,
+    foutAntwoorden: foutAntwoorden.map(strip),
+    weetNietAntwoorden: weetNietAntwoorden.map(strip),
+    // Voor de Sheet en de mail: alles wat niet goed was (fout plus "ik weet het niet").
+    fouten: foutAntwoorden.concat(weetNietAntwoorden).map(strip)
   };
 
   toonResultaat(resultaat);
   bewaarInWachtrij(resultaat);
   flushWachtrij();
+}
+
+function foutKaart(f, induik) {
+  const kaart = maak("div", induik ? "foutkaart induik" : "foutkaart");
+  kaart.appendChild(maak("p", "fout-vraag", f.vraag));
+  if (!induik) {
+    const jouw = maak("p", "fout-regel");
+    jouw.innerHTML = `Jouw antwoord: <span class="fout-x">${f.gegeven}</span>`;
+    kaart.appendChild(jouw);
+  }
+  const goedR = maak("p", "fout-regel");
+  goedR.innerHTML = `Goed antwoord: <span class="goed-v">${f.juist}</span>`;
+  kaart.appendChild(goedR);
+  if (f.uitleg) kaart.appendChild(maak("p", "fout-uitleg", f.uitleg));
+  return kaart;
 }
 
 function toonResultaat(r) {
@@ -303,20 +397,21 @@ function toonResultaat(r) {
   else boodschap = "Lees de les nog eens en probeer het opnieuw.";
   box.appendChild(maak("p", "score-boodschap", `${boodschap} (${perc}%)`));
 
-  if (r.fouten.length) {
+  const foutLijst = r.foutAntwoorden || [];
+  const weetLijst = r.weetNietAntwoorden || [];
+
+  if (foutLijst.length) {
     box.appendChild(maak("h3", null, "Wat ging er mis?"));
-    r.fouten.forEach((f) => {
-      const kaart = maak("div", "foutkaart");
-      kaart.appendChild(maak("p", "fout-vraag", f.vraag));
-      const jouw = maak("p", "fout-regel");
-      jouw.innerHTML = `Jouw antwoord: <span class="fout-x">${f.gegeven}</span>`;
-      kaart.appendChild(jouw);
-      const goedR = maak("p", "fout-regel");
-      goedR.innerHTML = `Goed antwoord: <span class="goed-v">${f.juist}</span>`;
-      kaart.appendChild(goedR);
-      box.appendChild(kaart);
-    });
-  } else {
+    foutLijst.forEach((f) => box.appendChild(foutKaart(f, false)));
+  }
+
+  if (weetLijst.length) {
+    box.appendChild(maak("h3", null, "Hier moet je nog induiken"));
+    box.appendChild(maak("p", "induik-hint", "Dit koos je 'ik weet het niet'. Lees het goed door en oefen deze les nog een keer."));
+    weetLijst.forEach((f) => box.appendChild(foutKaart(f, true)));
+  }
+
+  if (!foutLijst.length && !weetLijst.length) {
     box.appendChild(maak("p", "alles-goed", "Alles goed, geen fouten!"));
   }
 
