@@ -1,6 +1,6 @@
 // Service worker: maakt de tool offline bruikbaar.
 // Verhoog het versienummer als je bestanden aanpast, dan haalt de iPad de nieuwe versie op.
-const CACHE = "verkeersexamen-v3";
+const CACHE = "verkeersexamen-v4";
 const BESTANDEN = [
   ".",
   "index.html",
@@ -18,7 +18,15 @@ const BESTANDEN = [
   "icons/borden/gesloten_alle.svg",
   "icons/borden/verboden_fietsers.svg",
   "icons/borden/inrijden_verboden.svg",
-  "icons/borden/rotonde.svg"
+  "icons/borden/rotonde.svg",
+  "icons/borden/bebouwde_kom.svg",
+  "icons/borden/einde_bebouwde_kom.svg",
+  "icons/borden/zone30.svg",
+  "icons/borden/oversteekplaats.svg",
+  "icons/borden/waarschuwing_voetgangers.svg",
+  "icons/borden/waarschuwing_kinderen.svg",
+  "icons/borden/bromfietspad.svg",
+  "icons/borden/onverplicht_fietspad.svg"
 ];
 
 self.addEventListener("install", (e) => {

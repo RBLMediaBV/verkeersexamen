@@ -10,7 +10,20 @@ const CONFIG = {
 
 // === Opslagsleutels ===
 const KEY_NAAM = "ve_naam";
+const KEY_NIVEAU = "ve_niveau";
 const KEY_WACHTRIJ = "ve_wachtrij"; // resultaten die nog verstuurd moeten worden
+
+// === Niveaus ===
+// Elke vraag heeft niveau 1 (beginner), 2 (midden) of 3 (expert).
+// Een gekozen niveau pakt alle vragen tot en met dat niveau (expert = alles).
+const NIVEAU_MAX = { beginner: 1, midden: 2, expert: 3 };
+const NIVEAU_LABEL = { beginner: "Beginner", midden: "Midden", expert: "Expert" };
+const GEMENGD_LENGTE = { beginner: 10, midden: 20, expert: 25 };
+const NIVEAU_UITLEG = {
+  beginner: "De makkelijke basisvragen.",
+  midden: "Basis plus wat lastigere vragen.",
+  expert: "Alle vragen, ook de moeilijke strik- en situatievragen."
+};
 
 // === Hulpjes ===
 const $ = (sel) => document.querySelector(sel);
@@ -29,7 +42,6 @@ function schud(arr) {
   return a;
 }
 function maakId() {
-  // Uniek id per toets, zodat opnieuw versturen nooit een dubbele rij geeft.
   if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
   return "id-" + Date.now() + "-" + Math.random().toString(36).slice(2, 10);
 }
@@ -43,7 +55,7 @@ function nu() {
 }
 
 // === Toestand van de lopende toets ===
-let toets = null; // { modus, vragen:[...], index, antwoorden:[...] }
+let toets = null;
 
 // === Schermen wisselen ===
 function toon(schermId) {
@@ -56,7 +68,19 @@ function toon(schermId) {
 function getNaam() { try { return localStorage.getItem(KEY_NAAM) || ""; } catch (e) { return ""; } }
 function setNaam(n) { try { localStorage.setItem(KEY_NAAM, n); } catch (e) {} }
 
-// === Beginscherm bijwerken ===
+// === Niveau ===
+function getNiveau() {
+  try { return localStorage.getItem(KEY_NIVEAU) || "midden"; } catch (e) { return "midden"; }
+}
+function setNiveau(n) { try { localStorage.setItem(KEY_NIVEAU, n); } catch (e) {} }
+
+// Vragen die bij het gekozen niveau horen (tot en met dat niveau), evt. voor een les.
+function vragenVoorNiveau(lesId) {
+  const max = NIVEAU_MAX[getNiveau()] || 2;
+  return VRAGEN.filter((v) => v.niveau <= max && (lesId == null || v.les === lesId));
+}
+
+// === Beginscherm ===
 function bouwStart() {
   const naam = getNaam();
   $("#naam-invoer").value = naam;
@@ -69,19 +93,33 @@ function vulLessen(containerId, modus) {
   const lijst = $("#" + containerId);
   lijst.innerHTML = "";
   LESSEN.forEach((les) => {
-    const aantal = VRAGEN.filter((v) => v.les === les.id).length;
     const knop = maak("button", "leskaart");
-    const meta = modus === "leren" ? "Lees de uitleg" : `${aantal} vragen`;
+    let meta;
+    if (modus === "leren") {
+      meta = "Lees de uitleg";
+    } else {
+      const aantal = vragenVoorNiveau(les.id).length;
+      meta = `${aantal} ${aantal === 1 ? "vraag" : "vragen"}`;
+    }
     knop.innerHTML = `<span class="lesnr">Les ${les.id}</span>
       <span class="lestitel">${les.titel}</span>
       <span class="lesmeta">${meta}</span>`;
-    if (modus === "leren") {
-      knop.addEventListener("click", () => toonLes(les.id));
-    } else {
-      knop.addEventListener("click", () => startToets("les", les.id));
-    }
+    if (modus === "leren") knop.addEventListener("click", () => toonLes(les.id));
+    else knop.addEventListener("click", () => startToets("les", les.id));
     lijst.appendChild(knop);
   });
+}
+
+// === Niveau-knoppen op het oefenscherm ===
+function werkNiveauUI() {
+  const niveau = getNiveau();
+  document.querySelectorAll("#niveauKeuze button").forEach((b) => {
+    b.classList.toggle("actief", b.dataset.niveau === niveau);
+  });
+  $("#niveauUitleg").textContent = NIVEAU_UITLEG[niveau];
+  const lengte = Math.min(GEMENGD_LENGTE[niveau], vragenVoorNiveau().length);
+  $("#start-gemengd").textContent = `Gemengde ronde (${lengte} vragen)`;
+  vulLessen("oefen-knoppen", "oefenen");
 }
 
 // === Lesstof tonen ===
@@ -96,7 +134,7 @@ function toonLes(lesId) {
     box.appendChild(maak("p", null, deel.body));
   });
 
-  if (les.borden) {
+  if (les.borden && les.borden.length) {
     const grid = maak("div", "borden-grid");
     les.borden.forEach((b) => {
       const kaart = maak("div", "bordkaart");
@@ -114,8 +152,8 @@ function toonLes(lesId) {
   onthoud.innerHTML = `<strong>Onthoud:</strong> ${les.onthoud}`;
   box.appendChild(onthoud);
 
-  const aantal = VRAGEN.filter((v) => v.les === les.id).length;
-  const startKnop = maak("button", "primair groot", `Oefen deze les (${aantal} vragen)`);
+  const aantal = vragenVoorNiveau(les.id).length;
+  const startKnop = maak("button", "primair groot", `Oefen deze les (${aantal} vragen, niveau ${NIVEAU_LABEL[getNiveau()].toLowerCase()})`);
   startKnop.addEventListener("click", () => startToets("les", les.id));
   box.appendChild(startKnop);
 
@@ -124,11 +162,9 @@ function toonLes(lesId) {
 
 // === Toets voorbereiden ===
 function maakVraagKopie(v) {
-  // Maak een kopie met geschudde opties, en onthoud welke juist is.
   const paren = v.opties.map((tekst, i) => ({ tekst, juist: i === v.juist }));
   const geschud = schud(paren);
   return {
-    origineel: v,
     vraag: v.vraag,
     toonBord: v.toonBord || null,
     opties: geschud,
@@ -140,18 +176,24 @@ function maakVraagKopie(v) {
 
 function startToets(modus, lesId) {
   if (!getNaam()) { toon("scherm-start"); $("#naam-invoer").focus(); return; }
+  const niveau = getNiveau();
   let bron;
   let modusTekst;
   if (modus === "les") {
-    bron = VRAGEN.filter((v) => v.les === lesId);
+    bron = vragenVoorNiveau(lesId);
     const les = LESSEN.find((l) => l.id === lesId);
     modusTekst = `Les ${lesId}: ${les.titel}`;
   } else {
-    bron = schud(VRAGEN).slice(0, 20);
-    modusTekst = "Gemengde ronde (20 vragen)";
+    const lengte = GEMENGD_LENGTE[niveau];
+    bron = schud(vragenVoorNiveau()).slice(0, lengte);
+    modusTekst = "Gemengde ronde";
   }
+  if (!bron.length) return;
   const vragen = schud(bron).map(maakVraagKopie);
-  toets = { modus: modusTekst, vragen, index: 0, antwoorden: [] };
+  toets = {
+    modus: `${modusTekst} (niveau ${NIVEAU_LABEL[niveau].toLowerCase()})`,
+    vragen, index: 0, antwoorden: []
+  };
   toonVraag();
   toon("scherm-toets");
 }
@@ -214,12 +256,8 @@ function kiesAntwoord(gekozenIndex, gekozenKnop) {
   const laatste = toets.index === toets.vragen.length - 1;
   const volgende = maak("button", "primair groot", laatste ? "Bekijk je resultaat" : "Volgende vraag");
   volgende.addEventListener("click", () => {
-    if (laatste) {
-      rondAf();
-    } else {
-      toets.index++;
-      toonVraag();
-    }
+    if (laatste) rondAf();
+    else { toets.index++; toonVraag(); }
   });
   fb.appendChild(volgende);
 }
@@ -301,7 +339,6 @@ function bewaarInWachtrij(r) {
 }
 
 async function verstuurEen(resultaat) {
-  // text/plain voorkomt een CORS-preflight, zodat het vanaf GitHub Pages werkt.
   const body = JSON.stringify(Object.assign({ sleutel: CONFIG.SLEUTEL }, resultaat));
   const resp = await fetch(CONFIG.ENDPOINT, {
     method: "POST",
@@ -327,11 +364,8 @@ async function flushWachtrij() {
 
   const overgebleven = [];
   for (const r of rij) {
-    try {
-      await verstuurEen(r);
-    } catch (e) {
-      overgebleven.push(r);
-    }
+    try { await verstuurEen(r); }
+    catch (e) { overgebleven.push(r); }
   }
   schrijfWachtrij(overgebleven);
   werkWachtrijMeldingBij();
@@ -366,15 +400,18 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Enter") $("#naam-opslaan").click();
   });
 
-  // Beginscherm: twee knoppen.
   $("#ga-leren").addEventListener("click", () => {
     vulLessen("leren-knoppen", "leren");
     toon("scherm-leren");
   });
   $("#ga-oefenen").addEventListener("click", () => {
     if (!getNaam()) { $("#naam-invoer").focus(); return; }
-    vulLessen("oefen-knoppen", "oefenen");
+    werkNiveauUI();
     toon("scherm-oefenen");
+  });
+
+  document.querySelectorAll("#niveauKeuze button").forEach((b) => {
+    b.addEventListener("click", () => { setNiveau(b.dataset.niveau); werkNiveauUI(); });
   });
 
   $("#start-gemengd").addEventListener("click", () => {
@@ -382,7 +419,6 @@ document.addEventListener("DOMContentLoaded", () => {
     startToets("gemengd");
   });
 
-  // Terug-knoppen sturen naar het aangegeven scherm.
   document.querySelectorAll("[data-naar]").forEach((k) => {
     k.addEventListener("click", () => {
       const naar = k.getAttribute("data-naar");
@@ -393,11 +429,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   $("#opnieuw-knop").addEventListener("click", () => { bouwStart(); toon("scherm-start"); });
 
-  // Probeer bij het openen meteen wat er nog in de wachtrij staat te versturen.
   flushWachtrij();
   window.addEventListener("online", flushWachtrij);
 
-  // Service worker voor offline gebruik.
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js").catch(() => {});
   }
